@@ -6,6 +6,8 @@ It listens for the device's BLE advertisements and shows the communication state
 
 When multiple ITH-11-B devices are detected, BirdMenu keeps the latest reading for each device. The menu bar shows the average temperature and humidity by default, and the menu lets you switch the display to a specific device.
 
+![BirdMenu screenshot](images/birdmenu.png)
+
 ## Experimental History Fetch
 
 The menu includes `Fetch Device History (Experimental)`. It connects to the selected ITH-11-B and tries the INKBIRD history-read command pattern used by related BLE hygrometers:

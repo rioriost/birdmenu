@@ -43,6 +43,9 @@
 !/docs/
 !/docs/*.md
 
+!/images/
+!/images/*.png
+
 # Local build products and generated runtime data.
 .build/
 build/
