@@ -2,27 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleExecutable</key>
-    <string>BirdMenu</string>
-    <key>CFBundleIdentifier</key>
-    <string>st.rio.birdmenu</string>
-    <key>CFBundleIconFile</key>
-    <string>BirdMenu</string>
-    <key>CFBundleName</key>
-    <string>BirdMenu</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>0.1.0</string>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSMinimumSystemVersion</key>
-    <string>13.0</string>
-    <key>LSUIElement</key>
-    <true/>
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>INKBIRD ITH-11-BのBLE広告を受信して温度、湿度、電池残量をメニューバーに表示します。</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
-    <string>INKBIRD ITH-11-BのBLE広告を受信して温度、湿度、電池残量をメニューバーに表示します。</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIconFile</key>
+	<string>BirdMenu</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.utilities</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>13.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>INKBIRD ITH-11-BのBLE広告とGATT通信を利用して温度、湿度、電池残量、履歴をメニューバーに表示・保存します。</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>INKBIRD ITH-11-BのBLE広告とGATT通信を利用して温度、湿度、電池残量、履歴をメニューバーに表示・保存します。</string>
 </dict>
 </plist>

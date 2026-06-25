@@ -6,7 +6,18 @@
 !/LICENSE
 !/Makefile
 !/Package.swift
+!/project.yml
 !/README.md
+!/BirdMenu.entitlements
+!/ExportOptions.appstore.plist
+
+!/BirdMenu.xcodeproj/
+!/BirdMenu.xcodeproj/project.pbxproj
+!/BirdMenu.xcodeproj/project.xcworkspace/
+!/BirdMenu.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+!/BirdMenu.xcodeproj/xcshareddata/
+!/BirdMenu.xcodeproj/xcshareddata/xcschemes/
+!/BirdMenu.xcodeproj/xcshareddata/xcschemes/*.xcscheme
 
 !/Assets/
 !/Assets/AppIcon.iconset/

@@ -1,0 +1,60 @@
+name: BirdMenu
+options:
+  bundleIdPrefix: st.rio
+  deploymentTarget:
+    macOS: "13.0"
+settings:
+  base:
+    DEVELOPMENT_TEAM: 23889H77KX
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.0"
+targets:
+  BirdMenu:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: Sources/BirdMenu
+      - path: Resources/BirdMenu.icns
+        buildPhase: resources
+      - path: BirdMenu.entitlements
+        buildPhase: none
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIconFile: BirdMenu
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: "13.0"
+        LSUIElement: true
+        NSBluetoothAlwaysUsageDescription: "INKBIRD ITH-11-BのBLE広告とGATT通信を利用して温度、湿度、電池残量、履歴をメニューバーに表示・保存します。"
+        NSBluetoothPeripheralUsageDescription: "INKBIRD ITH-11-BのBLE広告とGATT通信を利用して温度、湿度、電池残量、履歴をメニューバーに表示・保存します。"
+    entitlements:
+      path: BirdMenu.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: st.rio.birdmenu
+        PRODUCT_NAME: BirdMenu
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: "$(SRCROOT)/BirdMenu.entitlements"
+        ENABLE_APP_SANDBOX: YES
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: NO
+schemes:
+  BirdMenu:
+    build:
+      targets:
+        BirdMenu: all
+    run:
+      config: Debug
+    archive:
+      config: Release

@@ -1,0 +1,352 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		149E81DE97591060308B4C8E /* InkbirdHistoryExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A1BBD94EA6AA7DB5D36E37 /* InkbirdHistoryExport.swift */; };
+		3FA93E0F91A538B2B9009AE4 /* BirdMenu.icns in Resources */ = {isa = PBXBuildFile; fileRef = FD4558223DEFFBFA1B1D9CA2 /* BirdMenu.icns */; };
+		599E2CBA350731B351250DD9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4587F2D96A4A8010431CED5 /* main.swift */; };
+		66BC383899D700EA1E39E7D2 /* InkbirdScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC618E25D7B8133582317773 /* InkbirdScanner.swift */; };
+		6B9722EFB73B45A6A87E3BEF /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */; };
+		8F5BCF49AFEB855704701886 /* InkbirdITH11BHistoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */; };
+		C89B70FA94B690DC333FA7EB /* InkbirdAdvertisementParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */; };
+		E93AD3C32124D1E5ABC6CC9B /* BirdMenuLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF675429B549DC2BE4CA3E /* BirdMenuLog.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0F216517563B4F46A88F1BC1 /* BirdMenu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdMenu.entitlements; sourceTree = "<group>"; };
+		1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdITH11BHistoryProtocol.swift; sourceTree = "<group>"; };
+		ACC3B02B3832DD355230D0B9 /* BirdMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC618E25D7B8133582317773 /* InkbirdScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdScanner.swift; sourceTree = "<group>"; };
+		DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdAdvertisementParser.swift; sourceTree = "<group>"; };
+		E2A1BBD94EA6AA7DB5D36E37 /* InkbirdHistoryExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdHistoryExport.swift; sourceTree = "<group>"; };
+		E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
+		F4587F2D96A4A8010431CED5 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		F7CF675429B549DC2BE4CA3E /* BirdMenuLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirdMenuLog.swift; sourceTree = "<group>"; };
+		FD4558223DEFFBFA1B1D9CA2 /* BirdMenu.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = BirdMenu.icns; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		9477B2B482880067507FCB0A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ACC3B02B3832DD355230D0B9 /* BirdMenu.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A8143C3BD3ACB7C905D22B57 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FD4558223DEFFBFA1B1D9CA2 /* BirdMenu.icns */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B2F0E2BB10EB72D0C399EB4E /* BirdMenu */ = {
+			isa = PBXGroup;
+			children = (
+				F7CF675429B549DC2BE4CA3E /* BirdMenuLog.swift */,
+				DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */,
+				E2A1BBD94EA6AA7DB5D36E37 /* InkbirdHistoryExport.swift */,
+				1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */,
+				CC618E25D7B8133582317773 /* InkbirdScanner.swift */,
+				F4587F2D96A4A8010431CED5 /* main.swift */,
+				E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */,
+			);
+			name = BirdMenu;
+			path = Sources/BirdMenu;
+			sourceTree = "<group>";
+		};
+		C7BE2EA86956E44ED3BE67F3 = {
+			isa = PBXGroup;
+			children = (
+				0F216517563B4F46A88F1BC1 /* BirdMenu.entitlements */,
+				B2F0E2BB10EB72D0C399EB4E /* BirdMenu */,
+				A8143C3BD3ACB7C905D22B57 /* Resources */,
+				9477B2B482880067507FCB0A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		82A80780472CE66EEF2B5948 /* BirdMenu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2D81F6EF5A2D5723C10E8673 /* Build configuration list for PBXNativeTarget "BirdMenu" */;
+			buildPhases = (
+				2D7DE7996FE76D4208184DE0 /* Sources */,
+				84BF1A6999E082F72A5D94EE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BirdMenu;
+			packageProductDependencies = (
+			);
+			productName = BirdMenu;
+			productReference = ACC3B02B3832DD355230D0B9 /* BirdMenu.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F928FB9151760F4BCE649D09 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					82A80780472CE66EEF2B5948 = {
+						DevelopmentTeam = 23889H77KX;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E342D801617CD7B9FAE9A2D6 /* Build configuration list for PBXProject "BirdMenu" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C7BE2EA86956E44ED3BE67F3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9477B2B482880067507FCB0A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				82A80780472CE66EEF2B5948 /* BirdMenu */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		84BF1A6999E082F72A5D94EE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FA93E0F91A538B2B9009AE4 /* BirdMenu.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2D7DE7996FE76D4208184DE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E93AD3C32124D1E5ABC6CC9B /* BirdMenuLog.swift in Sources */,
+				C89B70FA94B690DC333FA7EB /* InkbirdAdvertisementParser.swift in Sources */,
+				149E81DE97591060308B4C8E /* InkbirdHistoryExport.swift in Sources */,
+				8F5BCF49AFEB855704701886 /* InkbirdITH11BHistoryProtocol.swift in Sources */,
+				66BC383899D700EA1E39E7D2 /* InkbirdScanner.swift in Sources */,
+				6B9722EFB73B45A6A87E3BEF /* StatusMenuController.swift in Sources */,
+				599E2CBA350731B351250DD9 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		14282BBBD4EA6CF1952B5F62 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 23889H77KX;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		50DB437367C276C349965117 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 23889H77KX;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		ABEE4075D5370E137926A850 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = BirdMenu.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = st.rio.birdmenu;
+				PRODUCT_NAME = BirdMenu;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C6CD2CF5B1DCE097C701BD37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = BirdMenu.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = st.rio.birdmenu;
+				PRODUCT_NAME = BirdMenu;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D81F6EF5A2D5723C10E8673 /* Build configuration list for PBXNativeTarget "BirdMenu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C6CD2CF5B1DCE097C701BD37 /* Debug */,
+				ABEE4075D5370E137926A850 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E342D801617CD7B9FAE9A2D6 /* Build configuration list for PBXProject "BirdMenu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				50DB437367C276C349965117 /* Debug */,
+				14282BBBD4EA6CF1952B5F62 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F928FB9151760F4BCE649D09 /* Project object */;
+}
