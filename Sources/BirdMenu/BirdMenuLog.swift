@@ -7,7 +7,13 @@ enum BirdMenuLog {
     private static let logger = Logger(subsystem: "st.rio.birdmenu", category: "BirdMenu")
 
     static var isDebugLoggingEnabled: Bool {
-        UserDefaults.standard.bool(forKey: debugLoggingDefaultsKey)
+        get {
+            UserDefaults.standard.bool(forKey: debugLoggingDefaultsKey)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: debugLoggingDefaultsKey)
+            info("debugLogging \(newValue ? "enabled" : "disabled")")
+        }
     }
 
     static func info(_ message: String) {

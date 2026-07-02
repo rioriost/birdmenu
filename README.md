@@ -20,7 +20,7 @@ The menu includes `Fetch Sensor History (Experimental)`. It connects to the sele
 
 Some tested sensors do not expose `fff8`; observed devices expose `fff3`, `fff4`, `fff5`, `fff6`, `fff7`, and an additional `5833ff01-9b8b-5191-6142-22a4536ef123` service. In that case BirdMenu saves a read-only GATT snapshot: it discovers all services, reads all readable characteristics, subscribes to notify characteristics, and does not write unknown history commands.
 
-Fetched data is saved under `~/Documents/BirdMenu Logs/`. The app always writes a raw JSON dump. If the packet layout can be decoded confidently, it also writes `history.csv`.
+Fetched data is saved under `~/Documents/BirdMenu Logs/`. The app always writes a raw JSON dump. If the packet layout can be decoded confidently, it also writes `history.csv` and local-date PNG charts named `history_yyyymmdd.png`.
 
 For observed sensors, the companion-app command sequence appears to return records that have not yet been synced rather than the full retained memory every time. In practice this means repeated fetches may produce only the new records since the previous successful sync. Keep the raw JSON files if you need to audit or re-decode the captured BLE packets later.
 

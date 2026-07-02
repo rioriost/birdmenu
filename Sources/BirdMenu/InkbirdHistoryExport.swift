@@ -8,7 +8,7 @@ struct InkbirdHistoryResult {
     let folderURL: URL
     let rawURL: URL
     let csvURL: URL?
-    let pngURL: URL?
+    let pngURLs: [URL]
     let recordCount: Int
     let packetCount: Int
     let warnings: [String]
@@ -108,29 +108,23 @@ enum InkbirdHistoryExportWriter {
             )
             : []
         let csvURL: URL?
-        let pngURL: URL?
+        let pngURLs: [URL]
         if records.contains(where: { $0.temperatureCelsius != nil || $0.humidityPercent != nil }) {
             let csv = folder.appendingPathComponent("history.csv")
             try Self.csv(for: records).write(to: csv, atomically: true, encoding: .utf8)
             csvURL = csv
 
-            let png = folder.appendingPathComponent("history.png")
-            if let pngData = try InkbirdHistoryChartRenderer.pngData(for: records) {
-                try pngData.write(to: png, options: .atomic)
-                pngURL = png
-            } else {
-                pngURL = nil
-            }
+            pngURLs = try InkbirdHistoryChartRenderer.writePNGs(for: records, to: folder)
         } else {
             csvURL = nil
-            pngURL = nil
+            pngURLs = []
         }
 
         return InkbirdHistoryResult(
             folderURL: folder,
             rawURL: rawURL,
             csvURL: csvURL,
-            pngURL: pngURL,
+            pngURLs: pngURLs,
             recordCount: records.count,
             packetCount: packets.count,
             warnings: warnings
@@ -407,7 +401,6 @@ enum InkbirdHistoryChartRenderer {
     private static let marginRight: CGFloat = 125
     private static let marginTop: CGFloat = 160
     private static let marginBottom: CGFloat = 105
-    private static let jst = TimeZone(identifier: "Asia/Tokyo") ?? .current
 
     struct TimeDomain: Equatable {
         let start: Date
@@ -419,7 +412,61 @@ enum InkbirdHistoryChartRenderer {
         let upper: Double
     }
 
-    static func pngData(for records: [InkbirdHistoryRecord]) throws -> Data? {
+    static func writePNGs(
+        for records: [InkbirdHistoryRecord],
+        to folder: URL,
+        timeZone: TimeZone = .autoupdatingCurrent
+    ) throws -> [URL] {
+        var urls: [URL] = []
+        for group in recordsByLocalDay(records, timeZone: timeZone) {
+            let domain = dayTimeDomain(startingAt: group.dayStart, timeZone: timeZone)
+            guard let pngData = try pngData(for: group.records, timeZone: timeZone, timeDomain: domain) else {
+                continue
+            }
+            let url = folder.appendingPathComponent(fileName(forDayStartingAt: group.dayStart, timeZone: timeZone))
+            try pngData.write(to: url, options: .atomic)
+            urls.append(url)
+        }
+        return urls
+    }
+
+    static func recordsByLocalDay(
+        _ records: [InkbirdHistoryRecord],
+        timeZone: TimeZone
+    ) -> [(dayStart: Date, records: [InkbirdHistoryRecord])] {
+        let calendar = calendar(for: timeZone)
+        var recordsByDay: [Date: [InkbirdHistoryRecord]] = [:]
+        for record in records {
+            guard let timestamp = record.timestamp else {
+                continue
+            }
+            recordsByDay[calendar.startOfDay(for: timestamp), default: []].append(record)
+        }
+        return recordsByDay.keys.sorted().map { dayStart in
+            let dayRecords = recordsByDay[dayStart] ?? []
+            return (dayStart, dayRecords.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) })
+        }
+    }
+
+    static func dayTimeDomain(startingAt dayStart: Date, timeZone: TimeZone) -> TimeDomain {
+        let calendar = calendar(for: timeZone)
+        let normalizedStart = calendar.startOfDay(for: dayStart)
+        let nextDay = calendar.date(byAdding: .day, value: 1, to: normalizedStart) ?? normalizedStart.addingTimeInterval(86_400)
+        return TimeDomain(start: normalizedStart, end: nextDay.addingTimeInterval(-1))
+    }
+
+    static func fileName(forDayStartingAt dayStart: Date, timeZone: TimeZone) -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "yyyyMMdd"
+        return "history_\(formatter.string(from: dayStart)).png"
+    }
+
+    static func pngData(
+        for records: [InkbirdHistoryRecord],
+        timeZone: TimeZone = .autoupdatingCurrent,
+        timeDomain: TimeDomain? = nil
+    ) throws -> Data? {
         let points = records.compactMap { record -> ChartPoint? in
             guard let timestamp = record.timestamp else {
                 return nil
@@ -434,7 +481,7 @@ enum InkbirdHistoryChartRenderer {
             return nil
         }
 
-        let timeDomain = roundedTimeDomain(for: points.map(\.timestamp), timeZone: jst)
+        let timeDomain = timeDomain ?? roundedTimeDomain(for: points.map(\.timestamp), timeZone: timeZone)
         let temperatureRange = temperatureAxisRange(values: points.compactMap(\.temperatureCelsius))
         let humidityRange = humidityAxisRange(values: points.compactMap(\.humidityPercent))
 
@@ -460,6 +507,7 @@ enum InkbirdHistoryChartRenderer {
             in: context,
             points: points,
             timeDomain: timeDomain,
+            timeZone: timeZone,
             temperatureRange: temperatureRange,
             humidityRange: humidityRange
         )
@@ -477,14 +525,13 @@ enum InkbirdHistoryChartRenderer {
         return data as Data
     }
 
-    static func roundedTimeDomain(for dates: [Date], timeZone: TimeZone = jst) -> TimeDomain {
+    static func roundedTimeDomain(for dates: [Date], timeZone: TimeZone = .autoupdatingCurrent) -> TimeDomain {
         guard let first = dates.min(), let last = dates.max() else {
             let now = Date()
             return TimeDomain(start: now, end: now.addingTimeInterval(1_800))
         }
 
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
+        let calendar = calendar(for: timeZone)
         let start = roundedHalfHour(for: first, calendar: calendar, direction: .down)
         let end = roundedHalfHour(for: last, calendar: calendar, direction: .up)
         if end > start {
@@ -518,6 +565,7 @@ enum InkbirdHistoryChartRenderer {
         in context: CGContext,
         points: [ChartPoint],
         timeDomain: TimeDomain,
+        timeZone: TimeZone,
         temperatureRange: ValueRange,
         humidityRange: ValueRange
     ) {
@@ -535,7 +583,7 @@ enum InkbirdHistoryChartRenderer {
         let humidityColor = CGColor(red: 0.12, green: 0.48, blue: 0.72, alpha: 1)
 
         drawText("Sensor History", in: context, at: CGPoint(x: marginLeft, y: 28), size: 28, weight: .bold, color: textColor)
-        drawText(subtitle(for: points, timeZone: jst), in: context, at: CGPoint(x: marginLeft, y: 66), size: 16, weight: .regular, color: mutedColor)
+        drawText(subtitle(for: points, timeZone: timeZone), in: context, at: CGPoint(x: marginLeft, y: 66), size: 16, weight: .regular, color: mutedColor)
         drawLegend(in: context, x: marginLeft, y: 108, color: temperatureColor, label: "Temperature (°C, left axis)")
         drawLegend(in: context, x: marginLeft + 330, y: 108, color: humidityColor, label: "Humidity (%, right axis)")
 
@@ -557,7 +605,7 @@ enum InkbirdHistoryChartRenderer {
 
         drawTemperatureAxis(in: context, plotRect: plotRect, range: temperatureRange, gridColor: gridColor, textColor: textColor)
         drawHumidityAxis(in: context, plotRect: plotRect, range: humidityRange, textColor: textColor)
-        drawTimeAxis(in: context, plotRect: plotRect, domain: timeDomain, gridColor: gridColor, textColor: textColor)
+        drawTimeAxis(in: context, plotRect: plotRect, domain: timeDomain, timeZone: timeZone, gridColor: gridColor, textColor: textColor)
 
         strokeSeries(
             points.compactMap { point in
@@ -580,7 +628,15 @@ enum InkbirdHistoryChartRenderer {
             color: humidityColor
         )
 
-        drawText("Time (JST)", in: context, at: CGPoint(x: plotRect.midX - 40, y: CGFloat(height) - 48), size: 15, weight: .regular, color: textColor)
+        let timeAxisLabel = "Time (\(timeZoneLabel(for: timeZone, date: timeDomain.start)))"
+        drawText(
+            timeAxisLabel,
+            in: context,
+            at: CGPoint(x: plotRect.midX - textWidth(timeAxisLabel, size: 15, weight: .regular) / 2, y: CGFloat(height) - 48),
+            size: 15,
+            weight: .regular,
+            color: textColor
+        )
         drawText(
             "Source: history.csv",
             in: context,
@@ -627,17 +683,18 @@ enum InkbirdHistoryChartRenderer {
         in context: CGContext,
         plotRect: CGRect,
         domain: TimeDomain,
+        timeZone: TimeZone,
         gridColor: CGColor,
         textColor: CGColor
     ) {
         let formatter = DateFormatter()
-        formatter.timeZone = jst
+        formatter.timeZone = timeZone
         formatter.dateFormat = "HH:mm"
 
         drawTimeLabel(formatter.string(from: domain.start), date: domain.start, in: context, plotRect: plotRect, domain: domain, textColor: textColor)
         drawTimeLabel(formatter.string(from: domain.end), date: domain.end, in: context, plotRect: plotRect, domain: domain, textColor: textColor)
 
-        for date in wholeHours(in: domain, timeZone: jst) {
+        for date in wholeHours(in: domain, timeZone: timeZone) {
             let x = xPosition(date: date, domain: domain, plotRect: plotRect)
             context.setStrokeColor(gridColor)
             context.setLineWidth(1.5)
@@ -705,9 +762,9 @@ enum InkbirdHistoryChartRenderer {
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
         let dates = points.map(\.timestamp)
         guard let start = dates.min(), let end = dates.max() else {
-            return "JST, 0 records"
+            return "\(timeZoneLabel(for: timeZone)), 0 records"
         }
-        return "JST, \(points.count) records, \(formatter.string(from: start)) - \(formatter.string(from: end))"
+        return "\(timeZoneLabel(for: timeZone, date: start)), \(points.count) records, \(formatter.string(from: start)) - \(formatter.string(from: end))"
     }
 
     private static func drawText(
@@ -752,8 +809,7 @@ enum InkbirdHistoryChartRenderer {
     }
 
     private static func wholeHours(in domain: TimeDomain, timeZone: TimeZone) -> [Date] {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
+        let calendar = calendar(for: timeZone)
         let firstHour = calendar.nextDate(
             after: domain.start,
             matching: DateComponents(minute: 0, second: 0, nanosecond: 0),
@@ -774,6 +830,16 @@ enum InkbirdHistoryChartRenderer {
             date = next
         }
         return dates
+    }
+
+    private static func calendar(for timeZone: TimeZone) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar
+    }
+
+    private static func timeZoneLabel(for timeZone: TimeZone, date: Date = Date()) -> String {
+        timeZone.abbreviation(for: date) ?? timeZone.identifier
     }
 
     private static func humidityTickValues(for range: ValueRange) -> [Double] {

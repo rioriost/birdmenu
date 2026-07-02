@@ -1,7 +1,7 @@
 APP_NAME := BirdMenu
 APP_BUNDLE_ID := st.rio.birdmenu
-APP_VERSION := 1.1.1
-APP_BUILD := 5
+APP_VERSION := 1.1.3
+APP_BUILD := 7
 BUILD_DIR := .build/release
 APP_DIR := build/$(APP_NAME).app
 CONTENTS_DIR := $(APP_DIR)/Contents
@@ -52,6 +52,7 @@ app: build
 	ditto --noextattr --norsrc "$(STAGING_APP_DIR)" "$(APP_DIR)"
 	$(SCRUB_APP_XATTRS)
 	codesign --force --sign - "$(APP_DIR)"
+	$(SCRUB_APP_XATTRS)
 	@echo "$(APP_DIR)"
 
 run: app

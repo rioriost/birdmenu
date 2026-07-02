@@ -8,8 +8,8 @@ settings:
     DEVELOPMENT_TEAM: 23889H77KX
     SWIFT_VERSION: "6.0"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
-    CURRENT_PROJECT_VERSION: "5"
-    MARKETING_VERSION: "1.1.1"
+    CURRENT_PROJECT_VERSION: "7"
+    MARKETING_VERSION: "1.1.3"
 targets:
   BirdMenu:
     type: application
@@ -41,6 +41,9 @@ targets:
         NSBluetoothPeripheralUsageDescription: "対応するBluetooth温湿度センサーのBLE広告とGATT通信を利用して、温度、湿度、電池残量、履歴をメニューバーに表示・保存します。"
     entitlements:
       path: BirdMenu.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.device.bluetooth: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: st.rio.birdmenu

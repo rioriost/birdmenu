@@ -117,10 +117,55 @@ import Testing
     #expect(records[45].humidityPercent == 99.5)
 }
 
-@Test func chartTimeDomainRoundsOutToHalfHoursInJST() throws {
+@Test func chartGroupsRecordsByLocalDayInProvidedTimeZone() throws {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = TimeZone(identifier: "Asia/Tokyo")!
-    let start = try #require(calendar.date(from: DateComponents(
+    let june28 = try #require(calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 28,
+        hour: 23,
+        minute: 59
+    )))
+    let june29 = try #require(calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 29,
+        hour: 0,
+        minute: 0
+    )))
+    let records = [
+        InkbirdHistoryRecord(timestamp: june29, index: 1, temperatureCelsius: 24.1, humidityPercent: 70.0),
+        InkbirdHistoryRecord(timestamp: june28, index: 0, temperatureCelsius: 24.0, humidityPercent: 69.0)
+    ]
+
+    let groups = InkbirdHistoryChartRenderer.recordsByLocalDay(records, timeZone: calendar.timeZone)
+
+    #expect(groups.count == 2)
+    #expect(groups[0].dayStart == calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 28,
+    )))
+    #expect(groups[0].records.map(\.index) == [0])
+    #expect(groups[1].dayStart == calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 29,
+    )))
+    #expect(groups[1].records.map(\.index) == [1])
+    #expect(InkbirdHistoryChartRenderer.fileName(forDayStartingAt: groups[0].dayStart, timeZone: calendar.timeZone) == "history_20260628.png")
+    #expect(InkbirdHistoryChartRenderer.fileName(forDayStartingAt: groups[1].dayStart, timeZone: calendar.timeZone) == "history_20260629.png")
+}
+
+@Test func chartDayDomainCoversWholeLocalDay() throws {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+    let date = try #require(calendar.date(from: DateComponents(
         timeZone: calendar.timeZone,
         year: 2026,
         month: 6,
@@ -128,33 +173,63 @@ import Testing
         hour: 11,
         minute: 34
     )))
-    let end = try #require(calendar.date(from: DateComponents(
-        timeZone: calendar.timeZone,
-        year: 2026,
-        month: 6,
-        day: 28,
-        hour: 13,
-        minute: 22
-    )))
 
-    let domain = InkbirdHistoryChartRenderer.roundedTimeDomain(for: [start, end], timeZone: calendar.timeZone)
+    let domain = InkbirdHistoryChartRenderer.dayTimeDomain(startingAt: date, timeZone: calendar.timeZone)
 
     #expect(domain.start == calendar.date(from: DateComponents(
         timeZone: calendar.timeZone,
         year: 2026,
         month: 6,
-        day: 28,
-        hour: 11,
-        minute: 30
+        day: 28
     )))
     #expect(domain.end == calendar.date(from: DateComponents(
         timeZone: calendar.timeZone,
         year: 2026,
         month: 6,
         day: 28,
-        hour: 13,
-        minute: 30
+        hour: 23,
+        minute: 59,
+        second: 59
     )))
+}
+
+@Test func writesHistoryPNGsPerLocalDay() throws {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+    let june28 = try #require(calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 28,
+        hour: 23,
+        minute: 50
+    )))
+    let june29 = try #require(calendar.date(from: DateComponents(
+        timeZone: calendar.timeZone,
+        year: 2026,
+        month: 6,
+        day: 29,
+        hour: 0,
+        minute: 10
+    )))
+    let records = [
+        InkbirdHistoryRecord(timestamp: june28, index: 0, temperatureCelsius: 24.0, humidityPercent: 69.0),
+        InkbirdHistoryRecord(timestamp: june29, index: 1, temperatureCelsius: 24.1, humidityPercent: 70.0)
+    ]
+    let folder = FileManager.default.temporaryDirectory
+        .appendingPathComponent("BirdMenuTests-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+    defer {
+        try? FileManager.default.removeItem(at: folder)
+    }
+
+    let urls = try InkbirdHistoryChartRenderer.writePNGs(for: records, to: folder, timeZone: calendar.timeZone)
+
+    #expect(urls.map(\.lastPathComponent) == ["history_20260628.png", "history_20260629.png"])
+    for url in urls {
+        let data = try Data(contentsOf: url)
+        #expect(data.starts(with: Data([0x89, 0x50, 0x4e, 0x47])))
+    }
 }
 
 @Test func decodesITH11BInitialRTDTHHistoryWithFallbackIntervalAndDeduplication() {

@@ -4,7 +4,14 @@ import Foundation
 enum BLEScannerStatus: Equatable {
     case starting
     case scanning
-    case bluetoothUnavailable(String)
+    case bluetoothUnavailable(BluetoothUnavailableReason)
+}
+
+enum BluetoothUnavailableReason: Equatable {
+    case poweredOff
+    case unauthorized
+    case unsupported
+    case unknown
 }
 
 final class InkbirdScanner: NSObject, CBCentralManagerDelegate {
@@ -88,13 +95,13 @@ final class InkbirdScanner: NSObject, CBCentralManagerDelegate {
             startScan()
         case .poweredOff:
             BirdMenuLog.debugData("scanner.state poweredOff")
-            onStatusChange?(.bluetoothUnavailable("Bluetoothがオフです"))
+            onStatusChange?(.bluetoothUnavailable(.poweredOff))
         case .unauthorized:
             BirdMenuLog.debugData("scanner.state unauthorized")
-            onStatusChange?(.bluetoothUnavailable("Bluetoothの使用が許可されていません"))
+            onStatusChange?(.bluetoothUnavailable(.unauthorized))
         case .unsupported:
             BirdMenuLog.debugData("scanner.state unsupported")
-            onStatusChange?(.bluetoothUnavailable("このMacはBluetooth LEをサポートしていません"))
+            onStatusChange?(.bluetoothUnavailable(.unsupported))
         case .resetting:
             BirdMenuLog.debugData("scanner.state resetting")
             onStatusChange?(.starting)
@@ -103,7 +110,7 @@ final class InkbirdScanner: NSObject, CBCentralManagerDelegate {
             onStatusChange?(.starting)
         @unknown default:
             BirdMenuLog.debugData("scanner.state unknownDefault")
-            onStatusChange?(.bluetoothUnavailable("Bluetooth状態を取得できません"))
+            onStatusChange?(.bluetoothUnavailable(.unknown))
         }
     }
 

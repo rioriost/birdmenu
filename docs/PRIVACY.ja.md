@@ -36,7 +36,7 @@ BirdMenuは、近くにある対応センサーから次のデータを処理す
 
 - `raw-history.json`
 - `history.csv`
-- `history.png`
+- `history_yyyymmdd.png`
 
 アプリのメニューでデバッグログを有効にした場合、BirdMenuは受信したBluetooth測定値やパケット情報をmacOS Unified Loggingに記録することがあります。これらのログはMac上に残り、macOSによって管理されます。
 

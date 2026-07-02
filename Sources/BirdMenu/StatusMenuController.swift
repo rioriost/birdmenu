@@ -6,15 +6,15 @@ final class StatusMenuController {
     private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let scanner = InkbirdScanner()
     private let menu = NSMenu()
-    private let statusItemText = NSMenuItem(title: "Status: Starting", action: nil, keyEquivalent: "")
-    private let displayItem = NSMenuItem(title: "Display: All Sensors", action: nil, keyEquivalent: "")
-    private let deviceItem = NSMenuItem(title: "Sensor: --", action: nil, keyEquivalent: "")
-    private let temperatureItem = NSMenuItem(title: "Temperature: --", action: nil, keyEquivalent: "")
-    private let humidityItem = NSMenuItem(title: "Humidity: --", action: nil, keyEquivalent: "")
-    private let batteryItem = NSMenuItem(title: "Battery: --", action: nil, keyEquivalent: "")
-    private let signalItem = NSMenuItem(title: "Signal: --", action: nil, keyEquivalent: "")
-    private let lastUpdateItem = NSMenuItem(title: "Last update: --", action: nil, keyEquivalent: "")
-    private let historyItem = NSMenuItem(title: "History: --", action: nil, keyEquivalent: "")
+    private let statusItemText = NSMenuItem(title: "\(AppText.status): \(AppText.starting)", action: nil, keyEquivalent: "")
+    private let displayItem = NSMenuItem(title: "\(AppText.display): \(AppText.allSensors)", action: nil, keyEquivalent: "")
+    private let deviceItem = NSMenuItem(title: "\(AppText.sensor): --", action: nil, keyEquivalent: "")
+    private let temperatureItem = NSMenuItem(title: "\(AppText.temperature): --", action: nil, keyEquivalent: "")
+    private let humidityItem = NSMenuItem(title: "\(AppText.humidity): --", action: nil, keyEquivalent: "")
+    private let batteryItem = NSMenuItem(title: "\(AppText.battery): --", action: nil, keyEquivalent: "")
+    private let signalItem = NSMenuItem(title: "\(AppText.signal): --", action: nil, keyEquivalent: "")
+    private let lastUpdateItem = NSMenuItem(title: "\(AppText.lastUpdate): --", action: nil, keyEquivalent: "")
+    private let historyItem = NSMenuItem(title: "\(AppText.history): --", action: nil, keyEquivalent: "")
 
     private var readingsByPeripheralID: [UUID: InkbirdReading] = [:]
     private var selectedPeripheralID: UUID? {
@@ -25,16 +25,8 @@ final class StatusMenuController {
     private var scannerStatus: BLEScannerStatus = .starting
     private var timer: Timer?
     private var isFetchingHistory = false
-    private var historyStatus = "History: Not fetched"
-    private var isDebugLoggingEnabled: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: BirdMenuLog.debugLoggingDefaultsKey)
-        }
-        set {
-            UserDefaults.standard.set(newValue, forKey: BirdMenuLog.debugLoggingDefaultsKey)
-            BirdMenuLog.info("debugLogging \(newValue ? "enabled" : "disabled")")
-        }
-    }
+    private var historyStatus: HistoryDisplayStatus = .notFetched
+    private var settingsWindowController: SettingsWindowController?
 
     private static let selectedPeripheralDefaultsKey = "selectedPeripheralID"
 
@@ -42,12 +34,22 @@ final class StatusMenuController {
         selectedPeripheralID = UserDefaults.standard.string(forKey: Self.selectedPeripheralDefaultsKey).flatMap(UUID.init(uuidString:))
         configureStatusItem()
         configureScanner()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localeDidChange),
+            name: NSLocale.currentLocaleDidChangeNotification,
+            object: nil
+        )
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 self?.refresh()
             }
         }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     private func configureStatusItem() {
@@ -98,11 +100,11 @@ final class StatusMenuController {
 
     @objc private func fetchHistory() {
         guard let reading = historyTargetReading() else {
-            showAlert(title: "No Sensor Selected", message: "Select a specific sensor, or wait until exactly one compatible sensor is detected.")
+            showAlert(title: AppText.noSensorSelectedTitle, message: AppText.noSensorSelectedMessage)
             return
         }
         isFetchingHistory = true
-        historyStatus = "History: Fetching..."
+        historyStatus = .fetching
         refresh()
         scanner.fetchHistory(for: reading) { [weak self] result in
             Task { @MainActor in
@@ -113,22 +115,24 @@ final class StatusMenuController {
                 switch result {
                 case let .success(history):
                     if let csvURL = history.csvURL {
-                        self.historyStatus = "History: \(history.recordCount) records"
-                        let pngLine = history.pngURL.map { "\nPNG: \($0.path)" } ?? ""
+                        self.historyStatus = .records(history.recordCount)
+                        let pngLines = history.pngURLs.isEmpty
+                            ? ""
+                            : "\nPNG:\n\(history.pngURLs.map(\.path).joined(separator: "\n"))"
                         self.showAlert(
-                            title: "History Fetch Complete",
-                            message: "Saved \(history.recordCount) decoded records and \(history.packetCount) raw packets.\n\nCSV: \(csvURL.path)\(pngLine)\nRaw: \(history.rawURL.path)"
+                            title: AppText.historyFetchCompleteTitle,
+                            message: Self.historyCompleteMessage(history: history, csvURL: csvURL, pngLines: pngLines)
                         )
                     } else {
-                        self.historyStatus = "History: raw only"
+                        self.historyStatus = .rawOnly
                         self.showAlert(
-                            title: "History Raw Dump Saved",
-                            message: "Saved \(history.packetCount) raw packets, but could not confidently decode them into CSV yet.\n\nRaw: \(history.rawURL.path)"
+                            title: AppText.historyRawDumpSavedTitle,
+                            message: Self.historyRawDumpMessage(history: history)
                         )
                     }
                 case let .failure(error):
-                    self.historyStatus = "History: failed"
-                    self.showAlert(title: "History Fetch Failed", message: error.localizedDescription)
+                    self.historyStatus = .failed
+                    self.showAlert(title: AppText.historyFetchFailedTitle, message: error.localizedDescription)
                 }
                 self.refresh()
             }
@@ -140,15 +144,41 @@ final class StatusMenuController {
         do {
             try FileManager.default.createDirectory(at: historyFolderURL, withIntermediateDirectories: true)
         } catch {
-            showAlert(title: "Could Not Open History Folder", message: error.localizedDescription)
+            showAlert(title: AppText.couldNotOpenHistoryFolderTitle, message: error.localizedDescription)
             return
         }
         NSWorkspace.shared.open(historyFolderURL)
     }
 
-    @objc private func toggleDebugLogging() {
-        isDebugLoggingEnabled.toggle()
-        scanner.restart()
+    @objc private func showAbout() {
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        NSApplication.shared.orderFrontStandardAboutPanel(nil)
+    }
+
+    @objc private func showSettings() {
+        guard settingsWindowController == nil else {
+            settingsWindowController?.show()
+            return
+        }
+        let controller = SettingsWindowController()
+        controller.onClose = { [weak self] in
+            Task { @MainActor in
+                self?.settingsWindowController = nil
+                self?.refresh()
+            }
+        }
+        controller.onChange = { [weak self] in
+            Task { @MainActor in
+                self?.refresh()
+            }
+        }
+        settingsWindowController = controller
+        refresh()
+        controller.show()
+    }
+
+    @objc private func localeDidChange() {
+        settingsWindowController?.reload()
         refresh()
     }
 
@@ -162,55 +192,53 @@ final class StatusMenuController {
         statusItem.button?.title = displayState.title
         statusItem.button?.toolTip = displayState.tooltip
 
-        statusItemText.title = "Status: \(displayState.statusText)"
+        statusItemText.title = "\(AppText.status): \(displayState.statusText)"
         updateDetailItems()
         rebuildMenu()
     }
 
     private func updateDetailItems() {
         guard let snapshot = selectedSnapshot() else {
-            displayItem.title = selectedPeripheralID == nil ? "Display: All Sensors" : "Display: Missing Sensor"
-            deviceItem.title = "Sensor: --"
-            temperatureItem.title = "Temperature: --"
-            humidityItem.title = "Humidity: --"
-            batteryItem.title = "Battery: --"
-            signalItem.title = "Signal: --"
-            lastUpdateItem.title = "Last update: --"
-            historyItem.title = historyStatus
+            displayItem.title = "\(AppText.display): \(selectedPeripheralID == nil ? AppText.allSensors : AppText.missingSensor)"
+            deviceItem.title = "\(AppText.sensor): --"
+            temperatureItem.title = "\(AppText.temperature): --"
+            humidityItem.title = "\(AppText.humidity): --"
+            batteryItem.title = "\(AppText.battery): --"
+            signalItem.title = "\(AppText.signal): --"
+            lastUpdateItem.title = "\(AppText.lastUpdate): --"
+            historyItem.title = historyStatus.menuTitle
             return
         }
 
-        displayItem.title = snapshot.isAggregate ? "Display: All Sensors" : "Display: \(snapshot.label)"
-        deviceItem.title = "Sensor: \(snapshot.label)"
-        temperatureItem.title = "Temperature: \(Self.formatTemperature(snapshot.temperatureCelsius))"
-        humidityItem.title = "Humidity: \(Self.formatHumidity(snapshot.humidityPercent))"
-        batteryItem.title = snapshot.batteryPercent.map { "Battery: \($0)%" } ?? "Battery: --"
-        signalItem.title = snapshot.rssi.map { "Signal: \($0) dBm" } ?? "Signal: --"
-        lastUpdateItem.title = "Last update: \(Self.relativeTime(since: snapshot.date))"
-        historyItem.title = historyStatus
+        displayItem.title = "\(AppText.display): \(snapshot.isAggregate ? AppText.allSensors : snapshot.label)"
+        deviceItem.title = "\(AppText.sensor): \(snapshot.label)"
+        temperatureItem.title = "\(AppText.temperature): \(Self.formatTemperature(snapshot.temperatureCelsius))"
+        humidityItem.title = "\(AppText.humidity): \(Self.formatHumidity(snapshot.humidityPercent))"
+        batteryItem.title = snapshot.batteryPercent.map { "\(AppText.battery): \($0)%" } ?? "\(AppText.battery): --"
+        signalItem.title = snapshot.rssi.map { "\(AppText.signal): \($0) dBm" } ?? "\(AppText.signal): --"
+        lastUpdateItem.title = "\(AppText.lastUpdate): \(Self.relativeTime(since: snapshot.date))"
+        historyItem.title = historyStatus.menuTitle
     }
 
     private func rebuildMenu() {
         menu.removeAllItems()
         menu.addItem(statusItemText)
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(displayItem)
         menu.addItem(deviceItem)
         menu.addItem(temperatureItem)
         menu.addItem(humidityItem)
         menu.addItem(batteryItem)
         menu.addItem(signalItem)
         menu.addItem(lastUpdateItem)
-        menu.addItem(historyItem)
         menu.addItem(NSMenuItem.separator())
 
-        let allDevicesItem = NSMenuItem(title: "All Sensors", action: #selector(selectAllDevices), keyEquivalent: "")
+        let allDevicesItem = NSMenuItem(title: AppText.allSensors, action: #selector(selectAllDevices), keyEquivalent: "")
         allDevicesItem.target = self
         allDevicesItem.state = selectedPeripheralID == nil ? .on : .off
         menu.addItem(allDevicesItem)
 
         for reading in sortedReadings() {
-            let item = NSMenuItem(title: deviceMenuTitle(for: reading), action: #selector(selectDevice(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: deviceSelectionTitle(for: reading), action: #selector(selectDevice(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = reading.peripheralID.uuidString
             item.state = selectedPeripheralID == reading.peripheralID ? .on : .off
@@ -218,49 +246,57 @@ final class StatusMenuController {
         }
 
         menu.addItem(NSMenuItem.separator())
-        let fetchHistoryItem = NSMenuItem(title: "Fetch Sensor History (Experimental)", action: #selector(fetchHistory), keyEquivalent: "h")
+        let rescanItem = NSMenuItem(title: AppText.rescan, action: #selector(rescan), keyEquivalent: "")
+        rescanItem.target = self
+        menu.addItem(rescanItem)
+
+        menu.addItem(NSMenuItem.separator())
+        let fetchHistoryItem = NSMenuItem(title: AppText.fetchSensorHistory, action: #selector(fetchHistory), keyEquivalent: "")
         fetchHistoryItem.target = self
         fetchHistoryItem.isEnabled = !isFetchingHistory && historyTargetReading() != nil
         menu.addItem(fetchHistoryItem)
 
-        let openHistoryFolderItem = NSMenuItem(title: "Open History Folder", action: #selector(openLatestHistoryFolder), keyEquivalent: "")
+        let openHistoryFolderItem = NSMenuItem(title: AppText.openHistoryFolder, action: #selector(openLatestHistoryFolder), keyEquivalent: "")
         openHistoryFolderItem.target = self
         menu.addItem(openHistoryFolderItem)
 
         menu.addItem(NSMenuItem.separator())
-        let debugItem = NSMenuItem(title: "Debug Logging", action: #selector(toggleDebugLogging), keyEquivalent: "d")
-        debugItem.target = self
-        debugItem.state = isDebugLoggingEnabled ? .on : .off
-        menu.addItem(debugItem)
+        let aboutItem = NSMenuItem(title: AppText.about, action: #selector(showAbout), keyEquivalent: "")
+        aboutItem.target = self
+        menu.addItem(aboutItem)
 
         menu.addItem(NSMenuItem.separator())
-        let rescanItem = NSMenuItem(title: "Rescan", action: #selector(rescan), keyEquivalent: "r")
-        rescanItem.target = self
-        menu.addItem(rescanItem)
-        let quitItem = NSMenuItem(title: "Quit BirdMenu", action: #selector(quit), keyEquivalent: "q")
+        let settingsItem = NSMenuItem(title: AppText.settings, action: #selector(showSettings), keyEquivalent: "")
+        settingsItem.target = self
+        settingsItem.isEnabled = settingsWindowController == nil
+        menu.addItem(settingsItem)
+
+        menu.addItem(NSMenuItem.separator())
+        let quitItem = NSMenuItem(title: AppText.quit, action: #selector(quit), keyEquivalent: "")
         quitItem.target = self
         menu.addItem(quitItem)
     }
 
     private func currentDisplayState() -> (title: String, color: NSColor, statusText: String, tooltip: String) {
         if case let .bluetoothUnavailable(reason) = scannerStatus {
-            return ("--.-°C --%", .systemRed, reason, "BirdMenu: \(reason)")
+            let text = Self.bluetoothUnavailableText(for: reason)
+            return ("--.-\(TemperatureUnit.current == .celsius ? "°C" : "°F") --%", .systemRed, text, "BirdMenu: \(text)")
         }
 
         guard let snapshot = selectedSnapshot() else {
-            let status = selectedPeripheralID == nil ? "Scanning for compatible sensors" : "Selected sensor has not been seen"
-            return ("--.-°C --%", .systemOrange, status, "BirdMenu: \(status)")
+            let status = selectedPeripheralID == nil ? AppText.scanning : AppText.selectedSensorMissing
+            return ("--.-\(TemperatureUnit.current == .celsius ? "°C" : "°F") --%", .systemOrange, status, "BirdMenu: \(status)")
         }
 
         let age = Date().timeIntervalSince(snapshot.date)
         let text = "\(Self.formatTemperature(snapshot.temperatureCelsius)) \(Self.formatHumidity(snapshot.humidityPercent))"
         if age <= 120 {
-            return (text, .systemGreen, "Receiving BLE advertisements", "BirdMenu: \(snapshot.label)")
+            return (text, .systemGreen, AppText.receivingBLE, "BirdMenu: \(snapshot.label)")
         }
         if age <= 600 {
-            return (text, .systemOrange, "Last BLE advertisement is stale", "BirdMenu: last update \(Self.relativeTime(since: snapshot.date))")
+            return (text, .systemOrange, AppText.staleBLE, "BirdMenu: \(AppText.lastUpdate) \(Self.relativeTime(since: snapshot.date))")
         }
-        return (text, .systemRed, "No recent BLE advertisements", "BirdMenu: last update \(Self.relativeTime(since: snapshot.date))")
+        return (text, .systemRed, AppText.noRecentBLE, "BirdMenu: \(AppText.lastUpdate) \(Self.relativeTime(since: snapshot.date))")
     }
 
     private func selectedSnapshot() -> DisplaySnapshot? {
@@ -286,7 +322,7 @@ final class StatusMenuController {
         let averageHumidity = humidities.isEmpty ? nil : humidities.reduce(0, +) / Double(humidities.count)
 
         return DisplaySnapshot(
-            label: "All Sensors (\(readings.count))",
+            label: "\(AppText.allSensors) (\(readings.count))",
             temperatureCelsius: averageTemperature,
             humidityPercent: averageHumidity,
             batteryPercent: nil,
@@ -315,13 +351,12 @@ final class StatusMenuController {
         }
     }
 
-    private func deviceMenuTitle(for reading: InkbirdReading) -> String {
-        let agePrefix = Date().timeIntervalSince(reading.date) > 600 ? "[stale] " : ""
-        return "\(agePrefix)\(deviceLabel(for: reading))  \(Self.formatTemperature(reading.temperatureCelsius))  \(Self.formatHumidity(reading.humidityPercent))"
+    private func deviceSelectionTitle(for reading: InkbirdReading) -> String {
+        deviceLabel(for: reading)
     }
 
     private func deviceLabel(for reading: InkbirdReading) -> String {
-        "Sensor \(Self.shortID(reading.peripheralID))"
+        "\(AppText.sensor) \(Self.shortID(reading.peripheralID))"
     }
 
     private static func shortID(_ uuid: UUID) -> String {
@@ -347,7 +382,7 @@ final class StatusMenuController {
     }
 
     private static func formatTemperature(_ value: Double) -> String {
-        String(format: "%.1f°C", value)
+        TemperatureUnit.current.formatted(value)
     }
 
     private static func formatHumidity(_ value: Double?) -> String {
@@ -360,13 +395,41 @@ final class StatusMenuController {
     private static func relativeTime(since date: Date) -> String {
         let seconds = max(0, Int(Date().timeIntervalSince(date)))
         if seconds < 60 {
-            return "\(seconds)s ago"
+            return AppText.localized(en: "\(seconds)s ago", ja: "\(seconds)秒前")
         }
         let minutes = seconds / 60
         if minutes < 60 {
-            return "\(minutes)m ago"
+            return AppText.localized(en: "\(minutes)m ago", ja: "\(minutes)分前")
         }
-        return "\(minutes / 60)h ago"
+        let hours = minutes / 60
+        return AppText.localized(en: "\(hours)h ago", ja: "\(hours)時間前")
+    }
+
+    private static func bluetoothUnavailableText(for reason: BluetoothUnavailableReason) -> String {
+        switch reason {
+        case .poweredOff:
+            AppText.bluetoothOff
+        case .unauthorized:
+            AppText.bluetoothUnauthorized
+        case .unsupported:
+            AppText.bluetoothUnsupported
+        case .unknown:
+            AppText.bluetoothUnknown
+        }
+    }
+
+    private static func historyCompleteMessage(history: InkbirdHistoryResult, csvURL: URL, pngLines: String) -> String {
+        if AppText.isJapanese {
+            return "\(history.recordCount)件の履歴レコードと\(history.packetCount)件の生パケットを保存しました。\n\nCSV: \(csvURL.path)\(pngLines)\nRaw: \(history.rawURL.path)"
+        }
+        return "Saved \(history.recordCount) decoded records and \(history.packetCount) raw packets.\n\nCSV: \(csvURL.path)\(pngLines)\nRaw: \(history.rawURL.path)"
+    }
+
+    private static func historyRawDumpMessage(history: InkbirdHistoryResult) -> String {
+        if AppText.isJapanese {
+            return "\(history.packetCount)件の生パケットを保存しましたが、CSVとして確実にデコードできませんでした。\n\nRaw: \(history.rawURL.path)"
+        }
+        return "Saved \(history.packetCount) raw packets, but could not confidently decode them into CSV yet.\n\nRaw: \(history.rawURL.path)"
     }
 
     private func showAlert(title: String, message: String) {
@@ -374,8 +437,31 @@ final class StatusMenuController {
         alert.messageText = title
         alert.informativeText = message
         alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK")
+        alert.addButton(withTitle: AppText.ok)
         alert.runModal()
+    }
+}
+
+private enum HistoryDisplayStatus {
+    case notFetched
+    case fetching
+    case records(Int)
+    case rawOnly
+    case failed
+
+    var menuTitle: String {
+        switch self {
+        case .notFetched:
+            "\(AppText.history): \(AppText.notFetched)"
+        case .fetching:
+            "\(AppText.history): \(AppText.fetching)"
+        case let .records(count):
+            AppText.isJapanese ? "\(AppText.history): \(count)件" : "\(AppText.history): \(count) records"
+        case .rawOnly:
+            "\(AppText.history): \(AppText.rawOnly)"
+        case .failed:
+            "\(AppText.history): \(AppText.failed)"
+        }
     }
 }
 

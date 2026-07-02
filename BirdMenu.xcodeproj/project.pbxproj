@@ -11,17 +11,25 @@
 		3FA93E0F91A538B2B9009AE4 /* BirdMenu.icns in Resources */ = {isa = PBXBuildFile; fileRef = FD4558223DEFFBFA1B1D9CA2 /* BirdMenu.icns */; };
 		599E2CBA350731B351250DD9 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4587F2D96A4A8010431CED5 /* main.swift */; };
 		66BC383899D700EA1E39E7D2 /* InkbirdScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC618E25D7B8133582317773 /* InkbirdScanner.swift */; };
+		68C48C0DC53B3047AAC7DC4A /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE442968AEF0062342FA1C5C /* SettingsWindowController.swift */; };
+		691406081564078876679AA9 /* LoginItemManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737A7BB5769ABCE60C26342D /* LoginItemManager.swift */; };
 		6B9722EFB73B45A6A87E3BEF /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */; };
+		705F437E30EBDB32634FF629 /* TemperatureUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7292F03E60477466E9F32F8F /* TemperatureUnit.swift */; };
 		8F5BCF49AFEB855704701886 /* InkbirdITH11BHistoryProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */; };
 		C89B70FA94B690DC333FA7EB /* InkbirdAdvertisementParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */; };
 		E93AD3C32124D1E5ABC6CC9B /* BirdMenuLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF675429B549DC2BE4CA3E /* BirdMenuLog.swift */; };
+		F682F6BB4EEDB5005A309B2F /* AppText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C2A3ECED8A28AD381275DC /* AppText.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0F216517563B4F46A88F1BC1 /* BirdMenu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BirdMenu.entitlements; sourceTree = "<group>"; };
 		1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdITH11BHistoryProtocol.swift; sourceTree = "<group>"; };
+		7292F03E60477466E9F32F8F /* TemperatureUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureUnit.swift; sourceTree = "<group>"; };
+		737A7BB5769ABCE60C26342D /* LoginItemManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemManager.swift; sourceTree = "<group>"; };
+		96C2A3ECED8A28AD381275DC /* AppText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppText.swift; sourceTree = "<group>"; };
 		ACC3B02B3832DD355230D0B9 /* BirdMenu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BirdMenu.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC618E25D7B8133582317773 /* InkbirdScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdScanner.swift; sourceTree = "<group>"; };
+		CE442968AEF0062342FA1C5C /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdAdvertisementParser.swift; sourceTree = "<group>"; };
 		E2A1BBD94EA6AA7DB5D36E37 /* InkbirdHistoryExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InkbirdHistoryExport.swift; sourceTree = "<group>"; };
 		E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
@@ -50,13 +58,17 @@
 		B2F0E2BB10EB72D0C399EB4E /* BirdMenu */ = {
 			isa = PBXGroup;
 			children = (
+				96C2A3ECED8A28AD381275DC /* AppText.swift */,
 				F7CF675429B549DC2BE4CA3E /* BirdMenuLog.swift */,
 				DED5D38BF62A6814A26EDAE1 /* InkbirdAdvertisementParser.swift */,
 				E2A1BBD94EA6AA7DB5D36E37 /* InkbirdHistoryExport.swift */,
 				1B98F2242C5362C25959FB99 /* InkbirdITH11BHistoryProtocol.swift */,
 				CC618E25D7B8133582317773 /* InkbirdScanner.swift */,
+				737A7BB5769ABCE60C26342D /* LoginItemManager.swift */,
 				F4587F2D96A4A8010431CED5 /* main.swift */,
+				CE442968AEF0062342FA1C5C /* SettingsWindowController.swift */,
 				E9FCC45CE4EF0392E86C0541 /* StatusMenuController.swift */,
+				7292F03E60477466E9F32F8F /* TemperatureUnit.swift */,
 			);
 			name = BirdMenu;
 			path = Sources/BirdMenu;
@@ -143,12 +155,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F682F6BB4EEDB5005A309B2F /* AppText.swift in Sources */,
 				E93AD3C32124D1E5ABC6CC9B /* BirdMenuLog.swift in Sources */,
 				C89B70FA94B690DC333FA7EB /* InkbirdAdvertisementParser.swift in Sources */,
 				149E81DE97591060308B4C8E /* InkbirdHistoryExport.swift in Sources */,
 				8F5BCF49AFEB855704701886 /* InkbirdITH11BHistoryProtocol.swift in Sources */,
 				66BC383899D700EA1E39E7D2 /* InkbirdScanner.swift in Sources */,
+				691406081564078876679AA9 /* LoginItemManager.swift in Sources */,
+				68C48C0DC53B3047AAC7DC4A /* SettingsWindowController.swift in Sources */,
 				6B9722EFB73B45A6A87E3BEF /* StatusMenuController.swift in Sources */,
+				705F437E30EBDB32634FF629 /* TemperatureUnit.swift in Sources */,
 				599E2CBA350731B351250DD9 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,7 +206,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 23889H77KX;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -204,7 +220,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -249,7 +265,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 7;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 23889H77KX;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -269,7 +285,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.1.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

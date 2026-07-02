@@ -36,7 +36,7 @@ These files may include:
 
 - `raw-history.json`
 - `history.csv`
-- `history.png`
+- `history_yyyymmdd.png`
 
 If debug logging is enabled in the app menu, BirdMenu may also write received Bluetooth readings and packet details to macOS Unified Logging. These logs remain on your Mac and are managed by macOS.
 
